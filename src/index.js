@@ -20,10 +20,15 @@ function assign(template, assigns, keyMaker, valueMaker) {
   keyMaker = keyMaker || defaultKeyMaker;
   valueMaker = valueMaker || defaultValueMaker;
 
-  return assigns.reduce(
-    (template, assign) => template.replace(keyMaker(assign[0]), valueMaker(assign[1])),
-    template
-  );
+  return Array.isArray(assign)
+    ? assigns.reduce(
+        (template, assign) => template.replace(keyMaker(assign[0]), valueMaker(assign[1])),
+        template
+      )
+    : Object.keys(assigns).reduce(
+        (template, key) => template.replace(keyMaker(key), valueMaker(assigns[key])),
+        template
+      );
 };
 
 function assignInFile(file, assigns, keyMaker, valueMaker) {
