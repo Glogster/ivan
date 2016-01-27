@@ -43,7 +43,7 @@ function getObjectMetadata(config, file, fileId) {
     request(
       {
         method: 'HEAD',
-        url: config.url + '/' + config.container + '/' + fileId + path.extname(file),
+        url: objectUrl(config, file, fileId),
         headers: {'X-Auth-Token': config.token}
       },
       (error, response) => {
@@ -61,7 +61,7 @@ function uploadObject(config, file, fileId) {
     fs.createReadStream(file).pipe(request(
       {
         method: 'PUT',
-        url: config.url + '/' + config.container + '/' + fileId + path.extname(file),
+        url: objectUrl(config, file, fileId),
         headers: {
           'X-Auth-Token': config.token,
           'Content-Type': mime.getMimeTypeByExtension(path.extname(file).substr(1))
@@ -77,7 +77,11 @@ function uploadObject(config, file, fileId) {
   });
 }
 
-function destination(config, file, fileId) {
+function objectUrl(config, file, fileId) {
+  return config.url + '/' + config.container + '/' + fileId + path.extname(file);
+}
+
+function objectPublicUrl(config, file, fileId) {
   return url.resolve(config.publicUrl, '/' + fileId + path.extname(file));
 }
 
@@ -85,5 +89,5 @@ module.exports = {
   init,
   getObjectMetadata,
   uploadObject,
-  destination
+  objectPublicUrl
 };

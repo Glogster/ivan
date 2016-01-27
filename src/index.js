@@ -99,7 +99,7 @@ function artifacts(config) {
                   errors = errors + 1;
                 } else {
                   success = success + 1;
-                  files[file] = cdn.destination(config, file, result);
+                  files[file] = cdn.objectPublicUrl(config, file, result);
                 }
 
                 complete();
