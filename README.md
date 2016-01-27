@@ -14,7 +14,7 @@ From command line:
 
 ```bash
 # to upload artifacts
-$ ./node_modules/.bin/ivan artifacts
+$ ./node_modules/.bin/ivan
 ```
 
 From javascript:
