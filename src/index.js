@@ -8,6 +8,11 @@ const cdn = require('./cdn');
 const encoding = 'utf8';
 const error = Symbol('ERROR');
 
+function log(verboseLevel, minVerboseLevel, message) {
+  if (verboseLevel >= minVerboseLevel)
+    console.error(message);
+}
+
 function defaultKeyMaker(key) {
   return '{$' + key + '}';
 }
@@ -51,6 +56,7 @@ function md5FileHash(file) {
 function artifacts(config) {
 
   const args = Array.prototype.slice.call(arguments);
+  const verbose = config.verbose;
 
   return new Promise((resolve, reject) => {
 
@@ -77,27 +83,36 @@ function artifacts(config) {
           walker.on('file', (root, stats, next) => {
             const file = path.join(root, stats.name);
             files[file] = null;
+            log(verbose, 2, 'File ' + file + ' started processing.');
 
             md5FileHash(file)
               .then((hash) => {
                 return cdn.getObjectMetadata(config, file, hash)
                   .then((status) => {
-                    if (status === 200)
+                    if (status === 200) {
+                      log(verbose, 2, 'file ' + file + ' already exists, skipping.');
                       return hash;
-                    if (status === 404)
+                    }
+                    if (status === 404) {
+                      log(verbose, 2, 'File ' + file + ' doesn\'t exist, uploading.');
                       return cdn.uploadObject(config, file, hash)
                         .then((status) => {
-                          if (status === 201)
+                          if (status === 201) {
+                            log(verbose, 1, 'File ' + file + ' uploaded.');
                             return hash;
+                          }
                           return error;
                         });
+                    }
                     return error;
                   });
               })
               .then((result) => {
                 if (result === error) {
+                  log(verbose, 2, 'File ' + file + ' errored.');
                   errors = errors + 1;
                 } else {
+                  log(verbose, 2, 'File ' + file + ' successfully processed.');
                   success = success + 1;
                   files[file] = cdn.objectPublicUrl(config, file, result);
                 }
@@ -105,6 +120,7 @@ function artifacts(config) {
                 complete();
               })
               .catch(() => {
+                log(verbose, 2, 'File ' + file + ' errored.');
                 errors = errors + 1;
                 complete();
               });
