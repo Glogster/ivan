@@ -25,7 +25,7 @@ function assign(template, assigns, keyMaker, valueMaker) {
   keyMaker = keyMaker || defaultKeyMaker;
   valueMaker = valueMaker || defaultValueMaker;
 
-  return Array.isArray(assign)
+  return Array.isArray(assigns)
     ? assigns.reduce(
         (template, assign) => template.replace(keyMaker(assign[0]), valueMaker(assign[1])),
         template
