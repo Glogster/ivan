@@ -34,7 +34,7 @@ function assign(template, assigns, keyMaker, valueMaker) {
         (template, key) => template.replace(keyMaker(key), valueMaker(assigns[key])),
         template
       );
-};
+}
 
 function assignInFile(file, assigns, keyMaker, valueMaker) {
   return fs.readFileAsync(file, encoding)
