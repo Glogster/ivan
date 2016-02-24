@@ -37,9 +37,12 @@ function assign(template, assigns, keyMaker, valueMaker) {
 }
 
 function assignInFile(file, assigns, keyMaker, valueMaker) {
-  return fs.readFileAsync(file, encoding)
+  const input = Array.isArray(file) ? file[0] : file;
+  const output = Array.isArray(file) ? file[1] : file;
+
+  return fs.readFileAsync(input, encoding)
     .then((content) => assign(content, assigns, keyMaker, valueMaker))
-    .then((content) => fs.writeFileAsync(file, content, encoding));
+    .then((content) => fs.writeFileAsync(output, content, encoding));
 }
 
 function md5FileHash(file) {
